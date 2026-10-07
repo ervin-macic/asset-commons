@@ -1,0 +1,470 @@
+{
+  "id": "asset-commons",
+  "name": "Asset Commons",
+  "version": "0.6.0",
+  "description": "The communal library of free, openly licensed creative assets (CC0 first) for agents and humans: textures, HDRIs, 3D models, sounds, music, animations, 2D art and UI kits, plus a directory of tools that generate assets, with licences, credits and engine import notes.",
+  "entry": "index.jsx",
+  "icon": "icon.png",
+  "offline_capable": false,
+  "permissions": {},
+  "theme_color": "#0d0d0d",
+  "background_color": "#0d0d0d",
+  "runtime": {
+    "imports": [
+      "react",
+      "@openai/apps-sdk-ui/components/Icon"
+    ]
+  },
+  "service": {
+    "id": "asset-commons",
+    "entry": "service.py",
+    "access": "self"
+  },
+  "schedule": {
+    "default": "15 4 * * *",
+    "user_configurable": true,
+    "job": "sync.py",
+    "initialize_on_install": true
+  },
+  "system_prompt": "asset-commons-core.md",
+  "skills": [
+    "asset-commons.md"
+  ],
+  "tools": [
+    {
+      "name": "search",
+      "description": "Search Asset Commons, this Möbius instance's shared library of free, openly licensed creative assets (CC0 first): PBR textures, HDRI skies, 3D models (glTF), low-poly and 2D game packs from Kenney and Quaternius (including animated characters and UI kits), about 17,000 CC0 entries from OpenGameArt (music, 2D sprites and tilesets, 3D models, textures, sound effects), and CC0 sounds searched live on Freesound when the owner has connected it. Plain words work and filter words are understood: \"mossy rock texture, cc0, 2k\", \"sunset sky hdri\", \"wooden chair under 10k tris\", \"footsteps on gravel sound\", \"calm loopable music\", \"8-bit battle music\", \"low-poly animated character\", \"pixel platformer tileset\", \"ui icons\". Returns compact results (id, title, type, licence, whether credit is required, source, author, specs, tags, and for packs the matching items inside), how the query was interpreted, counts per type, notices, and `tools`: generators and other sources that can make or supply what is missing (always included when the query asks to generate/create/make something). Open a result or tool with asset_commons_get or pull an asset with asset_commons_download.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "What you need, in plain words. Words like texture, model, hdri, sound, cc0, low-poly, 4k or 'under 5k tris' become filters."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "texture",
+              "model",
+              "hdri",
+              "sound",
+              "music",
+              "animation",
+              "sprite",
+              "ui"
+            ],
+            "description": "sound = effects and ambience; music = tracks, loops and jingles; sprite = 2D art and tilesets; ui = interface kits, icons and fonts. Animated packs also match animation."
+          },
+          "license": {
+            "type": "string",
+            "description": "cc0 / public-domain (no attribution), attribution, share-alike, or an id such as CC-BY-4.0. Comma-separate several."
+          },
+          "source": {
+            "type": "string",
+            "description": "Limit to a source: polyhaven, ambientcg, kenney, quaternius, freesound."
+          },
+          "style": {
+            "type": "string",
+            "enum": [
+              "realistic",
+              "stylized",
+              "low-poly",
+              "pixel",
+              "toon",
+              "hand-painted"
+            ]
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags every result must carry."
+          },
+          "format": {
+            "type": "string",
+            "description": "File format every result must offer, e.g. gltf, fbx, hdr, exr."
+          },
+          "min_resolution": {
+            "type": "integer",
+            "description": "Minimum texture/HDRI resolution in pixels (2000 ≈ 2K)."
+          },
+          "max_polycount": {
+            "type": "integer",
+            "description": "Maximum polygons for models."
+          },
+          "max_duration": {
+            "type": "number",
+            "description": "Maximum length in seconds for sounds and music."
+          },
+          "sort": {
+            "type": "string",
+            "enum": [
+              "relevance",
+              "popular",
+              "newest",
+              "name"
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "description": "Results to return (default 10)."
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Skip this many results (use next_offset)."
+          }
+        }
+      }
+    },
+    {
+      "name": "get",
+      "description": "Open one Asset Commons asset by id: description, licence and a ready credit line, real-world size and polycount, every download variant with sizes (with direct file URLs for the recommended or requested variant), a pack's contents, notes about the source (e.g. an OpenGameArt author's credit request), field notes left by other agents, and step-by-step import notes for Godot 4, three.js, Unity, Unreal and Blender. OpenGameArt entries not read yet are read on the spot (the site asks for ten seconds between requests, so this can take a few seconds). With a tool:<id> from the directory it returns what the tool makes, how to use it, pricing, the licence of its outputs and field notes.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Asset id from search (e.g. polyhaven:rock_ground_02, kenney:mini-forest) or a directory entry (e.g. tool:meshy)."
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "godot",
+              "threejs",
+              "unity",
+              "unreal",
+              "blender"
+            ],
+            "description": "Only include import notes for this engine."
+          },
+          "variant": {
+            "type": "string",
+            "description": "Variant id to list file URLs for (default: the recommended one)."
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "download",
+      "description": "Download one Asset Commons asset into a project folder. Files land in <dest_dir>/<asset name>/ with asset-commons.json (provenance: source, licence, authors, files) and ASSET-LICENSE.txt; zip archives are unpacked. Returns the written paths, the credit line, whether attribution is required, and import notes. Defaults to a sensible variant (textures: 2K; sounds: Freesound's high-quality OGG preview, originals need a Freesound login; Kenney packs: the pack zip, unpacked; OpenGameArt: all of the entry's files, or for music and sounds the game-ready OGG; Quaternius packs can't be fetched automatically and the error explains the manual itch.io download); downloads over max_mb are refused before fetching. Asking again for the same variant reuses the files already there.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Asset id from search or get."
+          },
+          "dest_dir": {
+            "type": "string",
+            "description": "Absolute folder to put the asset in, e.g. /data/projects/<project>/assets/textures."
+          },
+          "variant": {
+            "type": "string",
+            "description": "Exact variant id from asset_commons_get, e.g. 1k-jpg, 2k-gltf, 4k-hdr, hq-ogg, all, preview-ogg, or one of an OpenGameArt entry's file names."
+          },
+          "resolution": {
+            "type": "string",
+            "description": "1k, 2k, 4k… when no variant is given."
+          },
+          "format": {
+            "type": "string",
+            "description": "jpg, png, exr, hdr, gltf, fbx, blend… when no variant is given."
+          },
+          "folder": {
+            "type": "string",
+            "description": "Folder name inside dest_dir (default: the asset's own name)."
+          },
+          "pick": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Only these files from a pack or an entry's zip: item names or path patterns such as 'tent' or 'GLB format/tree*'. Fetches just those files with small range requests, plus their textures and the licence; one model format per item (GLB first) unless format is given."
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "godot",
+              "threejs",
+              "unity",
+              "unreal",
+              "blender"
+            ],
+            "description": "Only include import notes for this engine."
+          },
+          "max_mb": {
+            "type": "number",
+            "description": "Refuse anything larger than this many megabytes (default 300)."
+          },
+          "overwrite": {
+            "type": "boolean",
+            "description": "Replace existing files with the same names."
+          }
+        },
+        "required": [
+          "id",
+          "dest_dir"
+        ]
+      }
+    },
+    {
+      "name": "credits",
+      "description": "Build CREDITS.md text for assets used in a project, grouped by what each licence asks (attribution required, share-alike, public domain). Pass ids, or dir to scan a project for the provenance files asset_commons_download wrote. With write: true and dir, saves CREDITS.md in that folder (or CREDITS.asset-commons.md when a hand-written CREDITS.md exists).",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Asset ids to credit."
+          },
+          "dir": {
+            "type": "string",
+            "description": "Absolute project folder to scan for asset-commons.json files."
+          },
+          "write": {
+            "type": "boolean",
+            "description": "Save the result as CREDITS.md in dir."
+          },
+          "title": {
+            "type": "string",
+            "description": "Heading for the document (default: Credits)."
+          }
+        }
+      }
+    },
+    {
+      "name": "add_resource",
+      "description": "Add a useful tool or resource to the Asset Commons directory so future agents can find it: an AI generator (3D models, textures, sound effects, music, voices, sprites), another free asset library, or a helper tool. Say what it makes, how an agent on Möbius can use it (API key, hosted MCP URL, local MCP, web only, open source), its pricing model and, most important, the licence terms of what it produces. Duplicate links are detected. Entries appear at once, marked unreviewed until the owner verifies them.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "https link to the tool, library or its docs."
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "generator",
+              "library",
+              "tool"
+            ]
+          },
+          "makes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "What it produces or offers: model, texture, hdri, sound, music, voice, animation, sprite, ui, image."
+          },
+          "description": {
+            "type": "string",
+            "description": "One or two sentences: what it is and what it is good for."
+          },
+          "how_to_use": {
+            "type": "string",
+            "description": "How an agent on Möbius can use it: API key needed? hosted MCP URL? web only? self-hosting?"
+          },
+          "pricing": {
+            "type": "string",
+            "enum": [
+              "free",
+              "freemium",
+              "paid",
+              "included",
+              "unknown"
+            ]
+          },
+          "pricing_note": {
+            "type": "string"
+          },
+          "output_terms": {
+            "type": "string",
+            "description": "Licence of what it produces, e.g. 'CC BY 4.0 on the free plan, private on paid plans'."
+          },
+          "access": {
+            "type": "object",
+            "description": "e.g. {\"api\": true, \"mcp\": \"hosted at https://…\", \"web\": true, \"open_source\": true}"
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "formats": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "url",
+          "kind",
+          "description"
+        ]
+      }
+    },
+    {
+      "name": "note",
+      "description": "Leave a short field note on an asset or directory entry for future agents: what worked, what went wrong, or a tip (scale or orientation fixes, import quirks, licence gotchas, prompts that work well with a generator). Be specific and factual; notes are shown whenever the item is opened.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Asset id (e.g. kenney:mini-forest) or directory id (e.g. tool:meshy)."
+          },
+          "note": {
+            "type": "string"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "worked",
+              "problem",
+              "tip"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "note"
+        ]
+      }
+    }
+  ],
+  "agent_activities": {
+    "asset-search": {
+      "tool": "search",
+      "running_label": "Searching Asset Commons"
+    },
+    "asset-get": {
+      "tool": "get",
+      "running_label": "Opening asset"
+    },
+    "asset-download": {
+      "tool": "download",
+      "running_label": "Downloading asset"
+    },
+    "asset-credits": {
+      "tool": "credits",
+      "running_label": "Writing credits"
+    },
+    "asset-add-resource": {
+      "tool": "add_resource",
+      "running_label": "Adding to the directory"
+    },
+    "asset-note": {
+      "tool": "note",
+      "running_label": "Saving a field note"
+    }
+  },
+  "source_files": [
+    "theme.js",
+    "lib/api.js",
+    "lib/media.js",
+    "ui/shared.jsx",
+    "ui/AssetGrid.jsx",
+    "ui/AssetDetail.jsx",
+    "ui/AgentSheet.jsx",
+    "ui/SourcesSheet.jsx",
+    "ui/ToolViews.jsx",
+    "service.py",
+    "commons/__init__.py",
+    "commons/db.py",
+    "commons/licenses.py",
+    "commons/credits.py",
+    "commons/catalog.py",
+    "commons/search.py",
+    "commons/importnotes.py",
+    "commons/net.py",
+    "commons/download.py",
+    "commons/library.py",
+    "commons/sources/__init__.py",
+    "commons/sources/polyhaven.py",
+    "commons/sources/ambientcg.py",
+    "commons/sources/freesound.py",
+    "commons/sources/kenney.py",
+    "commons/sources/quaternius.py",
+    "commons/resources.py",
+    "commons/remotezip.py",
+    "resources.json",
+    "tools/search_eval.py",
+    "tests/test_commons.py",
+    "asset-commons.md",
+    "asset-commons-core.md",
+    "README.md",
+    "commons/pace.py",
+    "commons/sources/opengameart.py",
+    "tests/fixtures/opengameart/item_2d_kenney.html",
+    "tests/fixtures/opengameart/item_3d.html",
+    "tests/fixtures/opengameart/item_music.html",
+    "tests/fixtures/opengameart/listing_2d.html",
+    "tests/fixtures/opengameart/listing_kenney.html",
+    "tests/fixtures/opengameart/listing_music.html",
+    "LICENSE",
+    "commons/seed.py",
+    "tools/export_seed.py",
+    "tools/install_local.py"
+  ],
+  "package_id": "18c500e2-ed12-4e64-8cc6-7cdafc80f0c3",
+  "license": "MIT",
+  "homepage": "https://github.com/ervin-macic/asset-commons",
+  "store": {
+    "tagline": "The communal asset library for Möbius — shared resources for agents and humans",
+    "description": "Asset Commons is a shared library of free, openly licensed creative assets that you and every agent on your Möbius can search, preview, download and credit, plus a directory of the tools that can make what the library lacks.\n\nWhat's inside\n• About 5,000 CC0 textures, HDRI skies and 3D models from Poly Haven and ambientCG\n• About 300 low-poly 3D, 2D, UI and audio packs from Kenney and Quaternius, searchable down to the single items inside each pack\n• About 17,000 CC0 entries from OpenGameArt: 2D sprites and tilesets, music, 3D models, textures and sound effects\n• Hundreds of thousands of CC0 sounds from Freesound, searched live once you add a free Freesound API key\n\nMade for agents\nEvery agent gets native tools to search in plain words (\"mossy rock texture, 2k\", \"8-bit battle music\", \"low-poly campfire\"), open an asset with its licence and import notes for Godot, three.js, Unity, Unreal and Blender, download just the files a project needs with a record of where they came from, and write a CREDITS file. Agents also leave field notes and add useful tools for the next agent.\n\nLicences first\nEvery asset shows its licence. Only free licences are accepted, CC0 first, and credit lines are written for you.\n\nTools directory\nGenerators for 3D models, textures, sound effects, music and images, other free libraries and helper tools, each with how an agent can use it, what it costs and the licence of what it makes.\n\nGood to know\nAsset files are not copied into the app: they come from the original source when someone downloads them. A ready-made OpenGameArt catalogue ships with the app, and the rest of its details arrive in the background (OpenGameArt asks for ten seconds between page requests). A Freesound key is optional and is kept in Möbius's encrypted store.",
+    "screenshots": [
+      {
+        "src": "static/store/asset-commons-search.png",
+        "alt": "Search results for “medieval”: models, 2D art, music and textures from OpenGameArt, Poly Haven, Kenney and Quaternius, each labelled CC0",
+        "label": "One search across every source, with the licence on every tile."
+      },
+      {
+        "src": "static/store/asset-commons-detail.png",
+        "alt": "A wooden chair model opened, showing a ready prompt for agents and its download options with sizes",
+        "label": "Agents pull exactly the files a project needs, with credits."
+      },
+      {
+        "src": "static/store/asset-commons-music.png",
+        "alt": "A search for 8-bit battle music understood as chiptune battle tracks, with one track open and a play button",
+        "label": "Music and sound effects with previews and mood search."
+      },
+      {
+        "src": "static/store/asset-commons-tools.png",
+        "alt": "The tools directory listing 3D, sound and music generators and other free asset libraries",
+        "label": "Generators and other libraries for what the library lacks."
+      },
+      {
+        "src": "static/store/asset-commons-agents.png",
+        "alt": "A panel listing the six Asset Commons tools that every agent gets",
+        "label": "Native tools for every agent on your Möbius."
+      }
+    ]
+  },
+  "storage_seeds": {
+    "catalog/seed/20261007T1817Z/opengameart-index.json": "seed/opengameart-index.json",
+    "catalog/seed/20261007T1817Z/opengameart-part1.json.gz": "seed/opengameart-part1.json.gz"
+  }
+}
