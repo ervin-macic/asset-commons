@@ -1,0 +1,185 @@
+{
+  "_about": "Curated starter entries for the Asset Commons tools directory, checked on 2026-10-07. Agents and people add more from the app or with the asset_commons_add_resource tool. Prices and terms change: each entry links its source.",
+  "resources": [
+    {
+      "id": "3d-ai-studio", "name": "3D AI Studio", "url": "https://www.3daistudio.com", "kind": "generator",
+      "makes": ["model", "texture"], "inputs": ["text", "image"], "formats": ["glb"],
+      "access": {"api": true, "mcp": "community server, runs locally", "web": true},
+      "pricing": "paid", "pricing_note": "Credit based; see 3D AI Studio's pricing page.",
+      "output_terms": "Check 3D AI Studio's terms for commercial use. Among its models is Tencent's Hunyuan3D, whose community licence does not apply in the UK, EU or South Korea; prefer TRELLIS 2 or Prism there.",
+      "description": "Text-to-3D and image-to-3D with several models (Prism, Hunyuan, TRELLIS 2), plus AI texturing and mesh tools, through a REST API with asynchronous jobs.",
+      "how_to_use": "The owner creates an API key at 3daistudio.com. Calls submit a job, poll its status, then download the GLB. The community MCP server (mcp-server-3daistudio) runs as a local program, which Möbius Integrations cannot host (it connects hosted MCP services only).",
+      "tags": ["text to 3d", "image to 3d", "ai", "texturing", "trellis", "hunyuan"], "docs": "https://docs.3daistudio.com/API"
+    },
+    {
+      "id": "meshy", "name": "Meshy", "url": "https://www.meshy.ai", "kind": "generator",
+      "makes": ["model", "texture", "animation"], "inputs": ["text", "image"], "formats": ["glb", "fbx", "obj", "usdz"],
+      "access": {"api": true, "mcp": "official server, runs locally (@meshy-ai/meshy-mcp-server)", "web": true},
+      "pricing": "freemium", "pricing_note": "Free plan: 100 credits a month in the web app; the API needs a paid (Pro) plan.",
+      "output_terms": "Free-plan outputs are CC BY 4.0 (credit Meshy); paid plans give private models with full commercial rights.",
+      "description": "Text-to-3D and image-to-3D with texturing, remeshing, auto-rigging and preset animations for characters.",
+      "how_to_use": "Use the web app for one-off models, or the API with a Pro key. The official MCP server is a local program (npx), not a hosted endpoint.",
+      "tags": ["text to 3d", "image to 3d", "rigging", "animation", "ai", "texturing"], "docs": "https://docs.meshy.ai"
+    },
+    {
+      "id": "tripo", "name": "Tripo AI", "url": "https://www.tripo3d.ai", "kind": "generator",
+      "makes": ["model", "animation"], "inputs": ["text", "image", "multi-view images"], "formats": ["glb", "fbx", "obj"],
+      "access": {"api": true, "mcp": "community servers, run locally", "web": true},
+      "pricing": "freemium", "pricing_note": "Free monthly credits; new API accounts get trial credits.",
+      "output_terms": "Free/Basic outputs are CC BY 4.0 (public); the Professional plan makes models private with commercial use.",
+      "description": "Fast text/image-to-3D drafts and refined models, with automatic rigging for humanoid characters.",
+      "how_to_use": "Create an API key in Tripo's platform; jobs are asynchronous (submit, poll, download).",
+      "tags": ["text to 3d", "image to 3d", "rigging", "ai"], "docs": "https://platform.tripo3d.ai"
+    },
+    {
+      "id": "hyper3d-rodin", "name": "Hyper3D Rodin", "url": "https://hyper3d.ai", "kind": "generator",
+      "makes": ["model"], "inputs": ["text", "image"], "formats": ["glb", "fbx", "obj", "usdz"],
+      "access": {"api": true, "mcp": "through Blender MCP", "web": true},
+      "pricing": "paid", "pricing_note": "Web use pays per credit; API access is on the Business plan.",
+      "output_terms": "Check Hyper3D's terms of service for commercial use.",
+      "description": "High-quality image/text-to-3D with 4K textures and quad meshes on higher plans.",
+      "how_to_use": "Best through Blender MCP (Blender running locally) or the REST API with a Business key.",
+      "tags": ["text to 3d", "image to 3d", "ai", "high quality"], "docs": "https://hyper3d.ai"
+    },
+    {
+      "id": "trellis-2", "name": "TRELLIS 2 (Microsoft)", "url": "https://github.com/microsoft/TRELLIS", "kind": "generator",
+      "makes": ["model"], "inputs": ["image", "text"], "formats": ["glb"],
+      "access": {"open_source": true, "self_host": "needs a GPU", "web": "Hugging Face Spaces"},
+      "pricing": "free", "pricing_note": "Open source; you pay only for the GPU you run it on.",
+      "output_terms": "MIT licence: free for commercial use.",
+      "description": "Open-source image-to-3D (and text-to-3D) producing textured meshes with PBR materials; released December 2025.",
+      "how_to_use": "Run it on a GPU machine or try a public Hugging Face Space. Möbius containers usually have no GPU, so this runs elsewhere.",
+      "tags": ["open source", "image to 3d", "self-host", "mit"]
+    },
+    {
+      "id": "hunyuan3d", "name": "Hunyuan3D (Tencent)", "url": "https://github.com/Tencent-Hunyuan", "kind": "generator",
+      "makes": ["model", "texture"], "inputs": ["image", "text"], "formats": ["glb"],
+      "access": {"open_source": "open weights", "self_host": "needs a GPU", "web": "Hugging Face Spaces"},
+      "pricing": "free", "pricing_note": "Open weights; GPU needed.",
+      "output_terms": "Tencent Hunyuan 3D Community License: does not apply in the UK, EU or South Korea, and needs a separate licence above 1 million monthly users.",
+      "description": "Open-weight image/text-to-3D with strong PBR texture synthesis.",
+      "how_to_use": "Self-host on a GPU or use a hosted service that offers it, after checking the territory restriction.",
+      "tags": ["open weights", "image to 3d", "texturing", "self-host"]
+    },
+    {
+      "id": "elevenlabs-sound-effects", "name": "ElevenLabs Sound Effects", "url": "https://elevenlabs.io/sound-effects", "kind": "generator",
+      "makes": ["sound", "music", "voice"], "inputs": ["text"], "formats": ["mp3", "wav"],
+      "access": {"api": true, "mcp": "official server, runs locally (elevenlabs-mcp)", "web": true},
+      "pricing": "freemium", "pricing_note": "Free tier with monthly credits; paid plans for more.",
+      "output_terms": "Royalty-free. The free plan requires attribution to elevenlabs.io; paid plans do not. Outputs may not be used to build competing products.",
+      "description": "Text-to-sound-effects (also voices and music) from short descriptions such as 'heavy wooden door creaks open'.",
+      "how_to_use": "The owner creates an API key at elevenlabs.io; the sound-generation endpoint returns audio directly.",
+      "tags": ["sound effects", "sfx", "text to audio", "ai", "voice"], "docs": "https://elevenlabs.io/docs"
+    },
+    {
+      "id": "stable-audio-open", "name": "Stable Audio Open (Stability AI)", "url": "https://huggingface.co/stabilityai/stable-audio-open-1.0", "kind": "generator",
+      "makes": ["sound", "music"], "inputs": ["text"], "formats": ["wav"],
+      "access": {"open_source": "open weights", "self_host": "needs a GPU"},
+      "pricing": "free", "pricing_note": "Open weights; GPU needed.",
+      "output_terms": "Stability AI Community License: check its revenue threshold before commercial use.",
+      "description": "Open-weight text-to-audio for short sound effects, ambiences and loops.",
+      "how_to_use": "Self-host with the stable-audio-tools library on a GPU machine.",
+      "tags": ["open weights", "sound effects", "text to audio", "self-host"]
+    },
+    {
+      "id": "audiocraft", "name": "AudioCraft: MusicGen and AudioGen (Meta)", "url": "https://github.com/facebookresearch/audiocraft", "kind": "generator",
+      "makes": ["music", "sound"], "inputs": ["text", "melody"], "formats": ["wav"],
+      "access": {"open_source": "code MIT, weights non-commercial", "self_host": "needs a GPU"},
+      "pricing": "free", "pricing_note": "Open source; GPU needed.",
+      "output_terms": "The model weights are CC BY-NC 4.0: non-commercial use only.",
+      "description": "Text-to-music (MusicGen) and text-to-sound (AudioGen) research models.",
+      "how_to_use": "Fine for prototypes and non-commercial projects; avoid in anything that will be sold.",
+      "tags": ["open source", "music", "sound effects", "non-commercial"]
+    },
+    {
+      "id": "mobius-codex-images", "name": "Möbius image generation (Codex chats)", "url": "https://openai.com/codex", "kind": "generator",
+      "makes": ["sprite", "texture", "ui", "image"], "inputs": ["text", "image"], "formats": ["png"],
+      "access": {"built_in": "Codex chats in Möbius (the images skill)"},
+      "pricing": "included", "pricing_note": "Covered by the Codex plan; no separate key.",
+      "output_terms": "Per OpenAI's terms; review before relying on outputs commercially.",
+      "description": "Concept art, sprites, icons, backgrounds and tileable texture drafts generated inside a Möbius chat running on Codex.",
+      "how_to_use": "Start a chat on the Codex provider and follow the images skill. Claude chats do not have this tool.",
+      "tags": ["image generation", "2d", "sprites", "concept art", "built-in"]
+    },
+    {
+      "id": "mixamo", "name": "Mixamo (Adobe)", "url": "https://www.mixamo.com", "kind": "tool",
+      "makes": ["animation"], "inputs": ["3d model"], "formats": ["fbx"],
+      "access": {"web": true},
+      "pricing": "free", "pricing_note": "Free with an Adobe account; no public API.",
+      "output_terms": "Characters and animations are royalty-free in your projects; the raw files may not be redistributed.",
+      "description": "Automatic rigging of humanoid characters and a large motion-capture animation library.",
+      "how_to_use": "Owner uploads a humanoid model in the browser, picks animations and downloads FBX files for the agent to import.",
+      "tags": ["rigging", "mocap", "humanoid", "animation library"]
+    },
+    {
+      "id": "blender-mcp", "name": "Blender MCP", "url": "https://github.com/ahujasid/blender-mcp", "kind": "tool",
+      "makes": ["model", "texture", "hdri"], "inputs": ["text"], "formats": ["blend", "glb", "fbx"],
+      "access": {"mcp": "runs locally with Blender", "open_source": true},
+      "pricing": "free", "pricing_note": "Open source; the generators it calls may charge.",
+      "output_terms": "Depends on the assets and generators used.",
+      "description": "Lets an AI agent drive Blender: build and edit scenes, pull Poly Haven assets, search Sketchfab and generate models with Hyper3D Rodin or Hunyuan3D.",
+      "how_to_use": "Needs Blender running on a machine with the add-on, plus a local MCP client. Not available inside the Möbius container.",
+      "tags": ["blender", "mcp", "scene building", "open source"]
+    },
+    {
+      "id": "gltf-transform", "name": "glTF Transform", "url": "https://gltf-transform.dev", "kind": "tool",
+      "makes": ["model"], "inputs": ["gltf", "glb"], "formats": ["glb", "gltf"],
+      "access": {"open_source": true, "cli": "npx @gltf-transform/cli"},
+      "pricing": "free", "pricing_note": "Open source (MIT).",
+      "output_terms": "Keeps the input model's licence.",
+      "description": "Inspect, optimise (Draco or Meshopt compression, texture resizing), merge and convert glTF/GLB files.",
+      "how_to_use": "Agents can run it in the container: npx @gltf-transform/cli optimize in.glb out.glb.",
+      "tags": ["gltf", "optimize", "compression", "cli", "open source"]
+    },
+    {
+      "id": "poly-pizza", "name": "Poly Pizza", "url": "https://poly.pizza", "kind": "library",
+      "makes": ["model"], "inputs": [], "formats": ["glb", "fbx", "obj"],
+      "access": {"api": "free API key (X-Auth-Token)", "web": true},
+      "pricing": "free", "pricing_note": "Free; the API needs a free key.",
+      "output_terms": "Each model is CC0 or CC BY; check the licence per model.",
+      "description": "Thousands of individual low-poly models, many by Quaternius and Kenney, downloadable one at a time as GLB.",
+      "how_to_use": "Search on the site or through its API (api.poly.pizza/v1) with a key; credit CC BY models.",
+      "tags": ["low-poly", "models", "cc0", "cc-by", "glb"]
+    },
+    {
+      "id": "opengameart", "name": "OpenGameArt", "url": "https://opengameart.org", "kind": "library",
+      "makes": ["sprite", "model", "sound", "music", "texture"], "inputs": [], "formats": [],
+      "access": {"web": true},
+      "pricing": "free", "pricing_note": "Free.",
+      "output_terms": "Mixed licences (CC0, CC BY, CC BY-SA, GPL, OGA-BY); filter by licence and credit as required.",
+      "description": "Community game art: 2D sprites, tilesets, 3D models, music and sound effects. Asset Commons already indexes its CC0 entries (about 17,000), so search the library first.",
+      "how_to_use": "Search Asset Commons first: OpenGameArt’s CC0 entries are in the library (ids opengameart:<page>) with files, previews and credit lines. Use the site itself only for entries under attribution or share-alike licences (CC BY, OGA-BY, CC BY-SA, GPL): filter by licence there and record the credit each one requires.",
+      "tags": ["game art", "sprites", "music", "community", "cc0"]
+    },
+    {
+      "id": "sketchfab", "name": "Sketchfab", "url": "https://sketchfab.com", "kind": "library",
+      "makes": ["model"], "inputs": [], "formats": ["glb", "gltf", "usdz"],
+      "access": {"api": "Data API (downloads need a token)", "web": true},
+      "pricing": "free", "pricing_note": "Many free downloadable models; some are paid.",
+      "output_terms": "Licences vary per model (CC0, CC BY, CC BY-SA, CC BY-NC…); avoid NC for commercial work and credit CC BY.",
+      "description": "A very large library of 3D models, including many downloadable under Creative Commons.",
+      "how_to_use": "Filter by 'downloadable' and licence; downloads through the API need the owner's account token.",
+      "tags": ["3d models", "creative commons", "scans"]
+    },
+    {
+      "id": "smithsonian-3d", "name": "Smithsonian Open Access 3D", "url": "https://3d.si.edu", "kind": "library",
+      "makes": ["model"], "inputs": [], "formats": ["obj", "gltf"],
+      "access": {"web": true, "api": "collections API"},
+      "pricing": "free", "pricing_note": "Free.",
+      "output_terms": "CC0 (public domain).",
+      "description": "Over 2,000 public-domain 3D scans from the Smithsonian collections: fossils, sculptures, artefacts, the Apollo 11 command module.",
+      "how_to_use": "Download OBJ or glTF from each object's page.",
+      "tags": ["cc0", "scans", "museum", "historical"]
+    },
+    {
+      "id": "itch-free-assets", "name": "itch.io free game assets", "url": "https://itch.io/game-assets/free", "kind": "library",
+      "makes": ["sprite", "model", "sound", "music", "ui"], "inputs": [], "formats": [],
+      "access": {"web": true},
+      "pricing": "free", "pricing_note": "Free or pay-what-you-want.",
+      "output_terms": "Licences vary per pack; many are CC0, others restrict redistribution or commercial use.",
+      "description": "Thousands of free and pay-what-you-want asset packs from independent artists, including Kenney and Quaternius.",
+      "how_to_use": "Browse by tag and read each pack's licence; downloads need a person (a checkout step).",
+      "tags": ["game assets", "packs", "indie", "pixel art"]
+    }
+  ]
+}
